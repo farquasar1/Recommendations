@@ -18,21 +18,13 @@ checkpoint("2014-10-08")
 
 ys=read.csv("ys_2m.csv")
 lines=readLines("semasio.csv",n=10000)
-#data <- fromJSON(lines, method='C')
 data <- lapply(X=lines, fromJSON)
 rm(lines)
-#df1=do.call(rbind.data.frame, data)
-#df1=rbind.fill(lapply(unlist(data,recursive=F), as.data.frame))
 dd=as.data.frame(t(sapply(data, "[", c(1:4))))
 rm(data)
 dd1=subset(dd,dd$eventType=="pageView")
-#dd1=subset(dd,dd$eventType=="basketView")
-#a=unique(dd1$userId)
 dd_vendas=subset(dd,dd$eventType=="sale")
 a=unique(dd_vendas$userId)
-rm(dd)
-#levels(as.factor(unlist(dd$eventType)))
-#sapply(dd1$product[[79]], "[", "id")
 product_id=sapply(dd1$product, "[", "id")
 dd1$product=(unlist(product_id))
 dd1$event=1
@@ -51,43 +43,24 @@ mo <- strftime(dd1$dateTime, "%d%m")
 head(mo)
 dd <- data.frame(data$CUSTOMER_ID_MASK,mo, data$AMOUNT,data$MERCHANT_GROUP)
 
-
-difftime()
 ggplot(dd1, aes(dateTime, ..count..))+geom_histogram(binwidth = 30, colour="white")
   
-#sales=as.data.frame(cbind(dd1$userId))
-#sales$venda=0
-#sales$V1[salesr$id] <- 1
-#sales=rep(0,nrow(dd1))
 salesr=as.data.frame(unlist(dd_vendas$userId));colnames(salesr)="id"
 salesr$date=(unlist(dd_vendas$dateTime));
 salesr$date=as.Date(salesr$date,"%Y/%m/%d")
 ggplot(salesr, aes(date, ..count..))+geom_histogram(binwidth = 30, colour="white")
 str(salesr)
 colnames(dd1)[2]="id"
-#dd2=sqldf("select * from dd1, salesr where dd1.id!=salesr.id")
 #venda
 a=join(dd1,salesr,type="inner",by="id")
-str(a)
-subset(a,a$id=="00000CFAF9501458")
-
 y1=as.data.frame(sqldf("select * from dd1 where dd1.id  in(select salesr.id from salesr)"));y1$flag=1
 #nao venda
 y0=as.data.frame(sqldf("select * from dd1 where dd1.id  not in(select salesr.id from salesr)"));y0$flag=0
-#y1=join(dd1,ids1,type="inner",by="id");y1$flag=1
-#y0=join(ids,yy,type="right",by="id");y0$flag=0;
-#y0 <- y0[sample(1:nrow(y0), 100,replace=FALSE),]
-#yc <- yc[sample(1:nrow(yc), nrow(yc),replace=FALSE),]
 ys=rbind(y1,y0)
 
 ###### so considerar eventos 1 dia antes das vendas
 dd_vendas$dateTime=unlist(dd_vendas$dateTime):dd_vendas$dateTime=as.Date(dd_vendas$dateTime,"%Y/%m/%d")
-dd1$dateTime[1:10]
-
 a=sqldf("select * from dd1,dd_vendas where (dd1.userId = dd_vendas.userId and 
-dd1.dateTime<dd_vendas.dateTime-1")
-sum(sales)
-
 
 ######### read categories
 cat=read.csv("Douglas_productfeed.csv",header=T)
@@ -150,7 +123,6 @@ write.csv(ys,"ys_2m.csv")
 
 
 ##############################################
-
 Filter(function(x){length(x)>0 && x[["b"]] > 1},z)
 data[lapply(data, length) > 5]
 lapply(data[10:20], length)
@@ -175,7 +147,6 @@ sum(dd$eventType=="pageView")
 (dd$eventType=="basketView")
 levels(df$eventType)
 dd=(sapply(data[1:10], "[", c(4)))
-
 
 mylist2 <- lapply(lapply(data[1:100], unlist), function(x) {
   names(x)[names(x) == "products.name"] <- "productname"
@@ -210,21 +181,7 @@ data[8]
 str(mylist2[77:78])
 
 df$dateTime=as.Date(as.character(df$dateTime),format="%Y/%m/%d %H:%M:%S")
-#df$dateTime=format(strptime(data$TXN_DATE, format="%Y/%m/%d %H:%M:%S"), format="%Y-%m-%d") 
 str(df$dateTime)
-
-dfs=subset(df,df$eventType!="adView")
-
-
-df$product.price=as.character(df$product.price)
-df$product.price=as.numeric(df$product.price)
-plot(df$product.price)
-sum(df$product.price,na.rm=T)
-dfs=subset(df,df$eventType=="sale")
-boxplot(data=df,product.price~eventType)
-levels(df$eventType)
-
-str(df[,1:10])
 
 
 ############
@@ -241,9 +198,3 @@ df1=as.matrix(unlist(df))
 df1[1]
 
 rbind.fill(lapply(unlist(data), as.data.frame))
-
-matrix(unlist(data[1:2]),nrow=1)
-
-levels(df$products.name.5)
-
-do.call(rbind.data.frame, your_list)
